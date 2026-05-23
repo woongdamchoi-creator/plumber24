@@ -10,7 +10,7 @@ export const siteConfig = {
   copyright:  '© 2025 배관매니저',
   // ── SEO 웹마스터 도구 소유권 인증 (필요 시 기입) ─────────────────────────────
   googleSiteVerification: 'Qfw9m9Ndmn1PzY6iz0Lobbm7jfBXskCQL6HJJoYOYCY',
-  naverSiteVerification:  '', // 예: 'y3_...'
+  naverSiteVerification:  '74a61090570b26b8987e731a415eb3b7b7142a13',
 
   // ── Google Apps Script (폼 접수 + 방문자 카운터 공용) ────────────────────────
   appsScriptUrl: 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxvht5K9cLHFMJ83ML_S8qY0PzgeqnL9TfZs_IZJB4alpz0NUcRzv0/exec',
