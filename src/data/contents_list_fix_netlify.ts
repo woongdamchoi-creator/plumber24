@@ -8,6 +8,9 @@ export const siteConfig = {
   phone:      '1866-2449',
   tel:        'tel:18662449',
   copyright:  '© 2025 배관매니저',
+  // ── SEO 웹마스터 도구 소유권 인증 (필요 시 기입) ─────────────────────────────
+  googleSiteVerification: '', // 예: 'hG_...'
+  naverSiteVerification:  '', // 예: 'y3_...'
 
   // ── Google Apps Script (폼 접수 + 방문자 카운터 공용) ────────────────────────
   appsScriptUrl: 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxvht5K9cLHFMJ83ML_S8qY0PzgeqnL9TfZs_IZJB4alpz0NUcRzv0/exec',

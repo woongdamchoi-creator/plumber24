@@ -1,5 +1,7 @@
 ---
 // src/layouts/BaseLayout.astro
+import { siteConfig } from '../data/contents_list_fix_netlify';
+
 interface Props {
   title: string;
   description?: string;
@@ -74,6 +76,8 @@ const allLd = [
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="robots" content="index, follow, max-image-preview:large" />
+  {siteConfig.googleSiteVerification && <meta name="google-site-verification" content={siteConfig.googleSiteVerification} />}
+  {siteConfig.naverSiteVerification && <meta name="naver-site-verification" content={siteConfig.naverSiteVerification} />}
   <link rel="canonical" href={canonUrl} />
 
   <!-- Open Graph -->
@@ -265,6 +269,7 @@ const allLd = [
       const payload = {
         type:     'inquiry',
         date:     _date,
+        site_url: window.location.hostname,
         name:     nameVal,
         phone:    phoneVal,
         inquiry:  service,
@@ -307,8 +312,9 @@ const allLd = [
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            type: 'pageview',
-            date: today,
+            type:     'pageview',
+            date:     today,
+            site_url: window.location.hostname,
             page_url: window.location.href,
             timestamp: new Date().toISOString(),
           }),

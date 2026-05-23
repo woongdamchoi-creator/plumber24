@@ -198,6 +198,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxv
     const payload = {
       type:     'inquiry',
       date,
+      site_url: window.location.hostname,
       name,
       phone,
       inquiry:  inquiryParts.join(', '),
