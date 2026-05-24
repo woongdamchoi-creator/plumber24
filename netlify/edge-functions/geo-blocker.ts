@@ -8,10 +8,11 @@ const ALLOWED_BOTS = [
   'Google-InspectionTool',     // URL 검사 도구
   'APIs-Google',
   'AdsBot-Google',
-  'bingbot', 'Yeti', 'Naverbot', 'NaverBot',
+  'bingbot',
+  'Yeti', 'Naverbot', 'NaverBot', 'Naver', 'naver',  // 네이버 크롤러 전체 커버
   'facebookexternalhit', 'Twitterbot', 'LinkedInBot', 'Slackbot', 'DuckDuckBot',
 ];
-const STATIC_PREFIX = ['/_astro/', '/images/', '/_assets/'];
+const STATIC_PREFIX = ['/_astro/', '/images/', '/_assets/', '/naverc'];
 const STATIC_EXT    = new Set(['.ico', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.css', '.js', '.woff', '.woff2', '.ttf', '.xml', '.txt']);
 
 export default async function handler(request: Request, context: any) {
