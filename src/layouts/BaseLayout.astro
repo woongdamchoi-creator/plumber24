@@ -26,7 +26,7 @@ const {
 const siteUrl  = 'https://plumbers24.netlify.app';
 const canonUrl = canonical ?? (siteUrl + Astro.url.pathname);
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxvht5K9cLHFMJ83ML_S8qY0PzgeqnL9TfZs_IZJB4alpz0NUcRzv0/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDVeRRffY40-PLJB3AXFWpJVqyQ9yxIJVvQj_Jxnm6x528J5HX-t6CVG_MDmfdSey0/exec';
 const gaId = import.meta.env.PUBLIC_GA_ID;
 
 // BreadcrumbList JSON-LD
@@ -264,25 +264,19 @@ const allLd = [
       btn.disabled = true;
       btn.textContent = '전송 중...';
 
-      const _now = new Date();
-      const _date = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
       const payload = {
-        type:     'inquiry',
-        date:     _date,
-        site_url: window.location.hostname,
-        name:     nameVal,
-        phone:    phoneVal,
-        inquiry:  service,
-        page_url: window.location.href,
-        source:   'quick-bar',
-        timestamp: _now.toISOString(),
+        date:      new Date().toISOString().slice(0, 10),
+        name:      nameVal,
+        phone:     phoneVal,
+        inquiry:   service,
+        source:    location.hostname,
+        page_url:  window.location.href,
+        timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
       };
 
       try {
         if (APPS_SCRIPT_URL) {
-          const qParams = new URLSearchParams(payload);
-          await fetch(APPS_SCRIPT_URL + '?' + qParams.toString(), {
-            method: 'POST',
+          await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(payload).toString(), {
             mode: 'no-cors',
           });
         }

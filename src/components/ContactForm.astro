@@ -6,7 +6,7 @@ interface Props {
 }
 const { region = '', keyword = '' } = Astro.props;
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxvht5K9cLHFMJ83ML_S8qY0PzgeqnL9TfZs_IZJB4alpz0NUcRzv0/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDVeRRffY40-PLJB3AXFWpJVqyQ9yxIJVvQj_Jxnm6x528J5HX-t6CVG_MDmfdSey0/exec';
 ---
 
 <section class="bg-blue-50 border border-blue-100 rounded-2xl p-6 md:p-8">
@@ -193,28 +193,19 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxv
     const otherText = (document.getElementById('cf-other-text')?.value || '').trim();
     const inquiryParts = [...cats];
     if (otherText) inquiryParts.push(`기타: ${otherText}`);
-    const now = new Date();
-    const date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     const payload = {
-      type:     'inquiry',
-      date,
-      site_url: window.location.hostname,
+      date:      new Date().toISOString().slice(0, 10),
       name,
       phone,
-      inquiry:  inquiryParts.join(', '),
-      region:   form.querySelector('[name="region"]').value,
-      keyword:  form.querySelector('[name="keyword"]').value,
-      page_url: form.querySelector('#cf-page-url').value,
-      source:   'contact-form',
-      timestamp: now.toISOString(),
+      inquiry:   inquiryParts.join(', '),
+      source:    location.hostname,
+      page_url:  window.location.href,
+      timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
     };
 
     try {
       if (APPS_SCRIPT_URL) {
-        // URL 쿼리 파라미터로 전송 — no-cors 환경에서 body가 사라지는 문제 방지
-        const params = new URLSearchParams(payload);
-        await fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
-          method: 'POST',
+        await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(payload).toString(), {
           mode: 'no-cors',
         });
       }
