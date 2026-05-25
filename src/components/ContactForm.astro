@@ -211,11 +211,11 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxv
 
     try {
       if (APPS_SCRIPT_URL) {
-        await fetch(APPS_SCRIPT_URL, {
+        // URL 쿼리 파라미터로 전송 — no-cors 환경에서 body가 사라지는 문제 방지
+        const params = new URLSearchParams(payload);
+        await fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
         });
       }
       showMsg('✅ 상담 신청이 완료되었습니다! 빠른 시일 내 연락드리겠습니다.', 'success');

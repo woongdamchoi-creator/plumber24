@@ -280,11 +280,10 @@ const allLd = [
 
       try {
         if (APPS_SCRIPT_URL) {
-          await fetch(APPS_SCRIPT_URL, {
+          const qParams = new URLSearchParams(payload);
+          await fetch(APPS_SCRIPT_URL + '?' + qParams.toString(), {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
           });
         }
         showQ('✅ 접수 완료! 빠른 시일 내 연락드리겠습니다.', 'success');
@@ -307,17 +306,16 @@ const allLd = [
         const key   = 'pv_counted_' + today;
         if (localStorage.getItem(key)) return; // 오늘 이미 카운트됨
         localStorage.setItem(key, '1');
-        fetch(APPS_URL, {
+        const pvParams = new URLSearchParams({
+          type:     'pageview',
+          date:     today,
+          site_url: window.location.hostname,
+          page_url: window.location.href,
+          timestamp: new Date().toISOString(),
+        });
+        fetch(APPS_URL + '?' + pvParams.toString(), {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type:     'pageview',
-            date:     today,
-            site_url: window.location.hostname,
-            page_url: window.location.href,
-            timestamp: new Date().toISOString(),
-          }),
         }).catch(() => {});
       } catch (_) {}
     })();
