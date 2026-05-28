@@ -46,6 +46,36 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcmiQ8bvCcxBwj
       />
     </div>
 
+    <!-- 지역 선택 -->
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label for="cf-sido" class="block text-sm font-medium text-gray-700 mb-1">
+          시/도 <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="cf-sido" name="sido"
+          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-white"
+        >
+          <option value="">시/도 선택</option>
+          <option value="서울특별시">서울특별시</option>
+          <option value="경기도">경기도</option>
+          <option value="인천광역시">인천광역시</option>
+        </select>
+      </div>
+      <div>
+        <label for="cf-sigungu" class="block text-sm font-medium text-gray-700 mb-1">
+          시/군/구
+        </label>
+        <select
+          id="cf-sigungu" name="sigungu"
+          disabled
+          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-white disabled:bg-gray-100 disabled:text-gray-400"
+        >
+          <option value="">시/도 먼저 선택</option>
+        </select>
+      </div>
+    </div>
+
     <!-- 상담 항목 (복수 체크) -->
     <div>
       <p class="block text-sm font-medium text-gray-700 mb-2">
@@ -63,30 +93,21 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcmiQ8bvCcxBwj
             for={item.id}
             class="flex items-center gap-2 p-2.5 border border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 bg-white"
           >
-            <input
-              id={item.id}
-              name="category"
-              type="checkbox"
-              value={item.value}
-              class="w-4 h-4 text-blue-600 rounded"
-            />
+            <input id={item.id} name="category" type="checkbox" value={item.value} class="w-4 h-4 text-blue-600 rounded" />
             <span class="text-sm text-gray-700">{item.icon} {item.value}</span>
           </label>
         ))}
-          <label
-            for="chk-other"
-            class="flex items-center gap-2 p-2.5 border border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 bg-white"
-          >
-            <input id="chk-other" name="category" type="checkbox" value="기타" class="w-4 h-4 text-blue-600 rounded" />
-            <span class="text-sm text-gray-700">📋 기타</span>
-          </label>
+        <label
+          for="chk-other"
+          class="flex items-center gap-2 p-2.5 border border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 bg-white"
+        >
+          <input id="chk-other" name="category" type="checkbox" value="기타" class="w-4 h-4 text-blue-600 rounded" />
+          <span class="text-sm text-gray-700">📋 기타</span>
+        </label>
       </div>
-      <!-- 기타 텍스트 입력 (기타 체크 시 표시) -->
       <div id="other-text-wrap" class="hidden mt-2">
         <textarea
-          id="cf-other-text"
-          name="other_text"
-          rows="2"
+          id="cf-other-text" name="other_text" rows="2"
           placeholder="기타 문의 내용을 입력해주세요."
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-white resize-none"
         ></textarea>
@@ -102,131 +123,156 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcmiQ8bvCcxBwj
     <!-- 개인정보 동의 아코디언 -->
     <div class="border border-gray-200 rounded-xl overflow-hidden">
       <button
-        type="button"
-        id="privacy-toggle"
+        type="button" id="privacy-toggle"
         class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 text-left text-sm text-gray-700 transition-colors"
         aria-expanded="false"
       >
         <span class="flex items-center gap-2">
-          <input
-            id="cf-agree"
-            type="checkbox"
-            name="agree"
-            required
-            class="w-4 h-4 text-blue-600 rounded flex-shrink-0"
-            onclick="event.stopPropagation()"
-          />
+          <input id="cf-agree" type="checkbox" name="agree" required class="w-4 h-4 text-blue-600 rounded flex-shrink-0" onclick="event.stopPropagation()" />
           <span>개인정보 수집·이용에 동의합니다 <span class="text-red-500">(필수)</span></span>
         </span>
-        <span id="privacy-arrow" class="text-gray-400 text-xs transition-transform duration-200 flex-shrink-0 ml-2">▼ 내용 보기</span>
+        <span id="privacy-arrow" class="text-gray-400 text-xs flex-shrink-0 ml-2">▼ 내용 보기</span>
       </button>
       <div id="privacy-content" class="hidden px-4 py-3 bg-white text-xs text-gray-600 leading-relaxed border-t border-gray-100 space-y-1.5">
-        <p>당사는 「개인정보보호법」, 「정보통신망 이용촉진 및 정보 보호 등에 관한 법률」에 따라 귀하의 개인정보를 다음과 같이 수집·이용하고자 합니다.</p>
-        <p><strong>1. 개인정보의 수집∙이용 목적:</strong> 하수구막힘, 배관막힘, 싱크대막힘 등 상담</p>
-        <p><strong>2. 수집·이용하는 개인정보의 내용:</strong> 성명, 연락처</p>
-        <p><strong>3. 개인정보 보유·이용 기간:</strong> 상담종료일로부터 30일</p>
-        <p><strong>4. 개인정보의 파기:</strong> 회사는 개인정보 보유 기간의 경과, 처리목적 달성 등 개인정보가 불필요하게 되었을 때에는 지체없이 해당 개인정보를 파기합니다.</p>
-        <p class="text-gray-500">※ 본 동의를 거부하실 수 있으나, 거부하는 경우에는 상담이 제한될 수 있습니다.</p>
+        <p>당사는 「개인정보보호법」에 따라 귀하의 개인정보를 다음과 같이 수집·이용합니다.</p>
+        <p><strong>1. 수집·이용 목적:</strong> 하수구막힘, 배관막힘, 싱크대막힘 등 상담</p>
+        <p><strong>2. 수집 항목:</strong> 성명, 연락처</p>
+        <p><strong>3. 보유 기간:</strong> 상담종료일로부터 30일</p>
+        <p class="text-gray-500">※ 동의를 거부하실 수 있으나, 거부 시 상담이 제한됩니다.</p>
       </div>
     </div>
 
     <!-- 제출 버튼 -->
-    <button
-      type="submit"
-      id="cf-submit-btn"
-      class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl text-base transition-colors shadow-md hover:shadow-lg"
-    >
+    <button type="submit" id="cf-submit-btn"
+      class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl text-base transition-colors shadow-md hover:shadow-lg">
       무료 상담 신청하기
     </button>
   </form>
 
-  <!-- 결과 메시지 -->
   <div id="cf-result" class="hidden mt-4 p-4 rounded-xl text-sm font-medium"></div>
 </section>
 
 <script define:vars={{ APPS_SCRIPT_URL }}>
-  // 페이지 URL 자동 입력
-  document.getElementById('cf-page-url').value = window.location.href;
+document.addEventListener('DOMContentLoaded', function () {
+  var REGION_DATA = {
+    '서울특별시': ['강남구','강동구','강북구','강서구','관악구','광진구','구로구','금천구','노원구','도봉구','동대문구','동작구','마포구','서대문구','서초구','성동구','성북구','송파구','양천구','영등포구','용산구','은평구','종로구','중구','중랑구'],
+    '경기도': ['고양시','과천시','광명시','광주시','구리시','군포시','김포시','남양주시','동두천시','부천시','성남시','수원시','시흥시','안산시','안성시','안양시','양주시','여주시','연천군','오산시','용인시','의왕시','의정부시','이천시','파주시','평택시','포천시','하남시','화성시'],
+    '인천광역시': ['강화군','계양구','남동구','동구','미추홀구','부평구','서구','연수구','옹진군','중구'],
+  };
 
-  // 기타 체크박스 → 텍스트 입력 표시/숨김
-  const chkOther   = document.getElementById('chk-other');
-  const otherWrap  = document.getElementById('other-text-wrap');
-  chkOther?.addEventListener('change', () => {
-    otherWrap?.classList.toggle('hidden', !chkOther.checked);
-  });
+  var pageUrlEl = document.getElementById('cf-page-url');
+  if (pageUrlEl) pageUrlEl.value = window.location.href;
 
-  // 개인정보 아코디언
-  const privToggle  = document.getElementById('privacy-toggle');
-  const privContent = document.getElementById('privacy-content');
-  const privArrow   = document.getElementById('privacy-arrow');
-  privToggle?.addEventListener('click', (e) => {
-    if (e.target.type === 'checkbox') return;
-    const open = !privContent.classList.contains('hidden');
-    privContent.classList.toggle('hidden', open);
-    privArrow.textContent = open ? '▼ 내용 보기' : '▲ 닫기';
-    privToggle.setAttribute('aria-expanded', String(!open));
-  });
+  var sidoEl    = document.getElementById('cf-sido');
+  var sigunguEl = document.getElementById('cf-sigungu');
 
-  const form   = document.getElementById('contact-form');
-  const result = document.getElementById('cf-result');
-  const btn    = document.getElementById('cf-submit-btn');
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const name   = document.getElementById('cf-name').value.trim();
-    const phone  = document.getElementById('cf-phone').value.trim();
-    const agree  = document.getElementById('cf-agree').checked;
-    const cats   = [...form.querySelectorAll('input[name="category"]:checked')].map(c => c.value);
-
-    if (!name)  { showMsg('성함을 입력해주세요.', 'error'); return; }
-    if (!phone) { showMsg('연락처를 입력해주세요.', 'error'); return; }
-    if (!/^0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{4}$/.test(phone)) {
-      showMsg('올바른 연락처 형식을 입력해주세요. (예: 010-1234-5678)', 'error'); return;
-    }
-    if (!cats.length) { showMsg('상담 항목을 하나 이상 선택해주세요.', 'error'); return; }
-    if (!agree) { showMsg('개인정보 수집·이용 동의가 필요합니다.', 'error'); return; }
-
-    btn.disabled = true;
-    btn.textContent = '전송 중...';
-
-    const otherText = (document.getElementById('cf-other-text')?.value || '').trim();
-    const inquiryParts = [...cats];
-    if (otherText) inquiryParts.push(`기타: ${otherText}`);
-    const payload = {
-      date:      new Date().toISOString().slice(0, 10),
-      name,
-      phone,
-      inquiry:   inquiryParts.join(', '),
-      source:    location.hostname,
-      page_url:  window.location.href,
-      timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
-    };
-
-    try {
-      if (APPS_SCRIPT_URL) {
-        await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(payload).toString(), {
-          mode: 'no-cors',
-        });
+  if (sidoEl && sigunguEl) {
+    sidoEl.addEventListener('change', function () {
+      var sido = sidoEl.value;
+      sigunguEl.innerHTML = '';
+      if (!sido) {
+        sigunguEl.innerHTML = '<option value="">시/도 먼저 선택</option>';
+        sigunguEl.disabled = true;
+        return;
       }
-      showMsg('✅ 상담 신청이 완료되었습니다! 빠른 시일 내 연락드리겠습니다.', 'success');
-      form.reset();
-    } catch {
-      showMsg('전송 중 오류가 발생했습니다. 전화(1866-2449)로 문의해주세요.', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '무료 상담 신청하기';
-    }
-  });
+      var defOpt = document.createElement('option');
+      defOpt.value = ''; defOpt.textContent = '시/군/구 선택';
+      sigunguEl.appendChild(defOpt);
+      (REGION_DATA[sido] || []).forEach(function (sg) {
+        var opt = document.createElement('option');
+        opt.value = sg; opt.textContent = sg;
+        sigunguEl.appendChild(opt);
+      });
+      sigunguEl.disabled = false;
+    });
+  }
+
+  var chkOther  = document.getElementById('chk-other');
+  var otherWrap = document.getElementById('other-text-wrap');
+  if (chkOther && otherWrap) {
+    chkOther.addEventListener('change', function () {
+      otherWrap.classList.toggle('hidden', !chkOther.checked);
+    });
+  }
+
+  var privToggle  = document.getElementById('privacy-toggle');
+  var privContent = document.getElementById('privacy-content');
+  var privArrow   = document.getElementById('privacy-arrow');
+  if (privToggle && privContent && privArrow) {
+    privToggle.addEventListener('click', function (e) {
+      if (e.target.type === 'checkbox') return;
+      var open = !privContent.classList.contains('hidden');
+      privContent.classList.toggle('hidden', open);
+      privArrow.textContent = open ? '▼ 내용 보기' : '▲ 닫기';
+      privToggle.setAttribute('aria-expanded', String(!open));
+    });
+  }
+
+  var form   = document.getElementById('contact-form');
+  var result = document.getElementById('cf-result');
+  var btn    = document.getElementById('cf-submit-btn');
+
+  if (form) {
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var name    = document.getElementById('cf-name').value.trim();
+      var phone   = document.getElementById('cf-phone').value.trim();
+      var sido    = document.getElementById('cf-sido').value;
+      var sigungu = document.getElementById('cf-sigungu').value;
+      var agree   = document.getElementById('cf-agree').checked;
+      var cats    = Array.from(form.querySelectorAll('input[name="category"]:checked')).map(function (c) { return c.value; });
+
+      if (!name)  { showMsg('성함을 입력해주세요.', 'error'); return; }
+      if (!phone) { showMsg('연락처를 입력해주세요.', 'error'); return; }
+      if (!/^0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{4}$/.test(phone)) {
+        showMsg('올바른 연락처 형식을 입력해주세요. (예: 010-1234-5678)', 'error'); return;
+      }
+      if (!sido)  { showMsg('시/도를 선택해주세요.', 'error'); return; }
+      if (!cats.length) { showMsg('상담 항목을 하나 이상 선택해주세요.', 'error'); return; }
+      if (!agree) { showMsg('개인정보 수집·이용 동의가 필요합니다.', 'error'); return; }
+
+      btn.disabled = true; btn.textContent = '전송 중...';
+
+      var otherText    = (document.getElementById('cf-other-text') ? document.getElementById('cf-other-text').value : '').trim();
+      var inquiryParts = cats.slice();
+      if (otherText) inquiryParts.push('기타: ' + otherText);
+
+      var payload = {
+        date:      new Date().toISOString().slice(0, 10),
+        name:      name,
+        phone:     phone,
+        sido:      sido,
+        sigungu:   sigungu,
+        address:   [sido, sigungu].filter(Boolean).join(' '),
+        inquiry:   inquiryParts.join(', '),
+        source:    location.hostname,
+        page_url:  window.location.href,
+        timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+      };
+
+      try {
+        if (APPS_SCRIPT_URL) {
+          await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(payload).toString(), { mode: 'no-cors' });
+        }
+        showMsg('✅ 상담 신청이 완료되었습니다! 빠른 시일 내 연락드리겠습니다.', 'success');
+        form.reset();
+        if (sigunguEl) { sigunguEl.innerHTML = '<option value="">시/도 먼저 선택</option>'; sigunguEl.disabled = true; }
+      } catch (_) {
+        showMsg('전송 중 오류가 발생했습니다. 전화(1866-2449)로 문의해주세요.', 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '무료 상담 신청하기';
+      }
+    });
+  }
 
   function showMsg(msg, type) {
     result.textContent = msg;
-    result.className = `mt-4 p-4 rounded-xl text-sm font-medium ${
-      type === 'success'
-        ? 'bg-green-50 text-green-700 border border-green-200'
-        : 'bg-red-50 text-red-700 border border-red-200'
-    }`;
+    result.className = 'mt-4 p-4 rounded-xl text-sm font-medium ' + (
+      type === 'success' ? 'bg-green-50 text-green-700 border border-green-200'
+                        : 'bg-red-50 text-red-700 border border-red-200'
+    );
     result.classList.remove('hidden');
-    setTimeout(() => result.classList.add('hidden'), 7000);
+    setTimeout(function () { result.classList.add('hidden'); }, 7000);
   }
+});
 </script>

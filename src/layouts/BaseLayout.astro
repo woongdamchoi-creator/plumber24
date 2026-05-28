@@ -46,11 +46,29 @@ const breadcrumbLd = breadcrumbs?.length
 const allLd = [
   {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': ['LocalBusiness', 'Plumber'],
     name: '배관매니저',
     url: siteUrl,
     telephone: '18662449',
-    description: '전국 배관막힘, 싱크대막힘 전문 업체. 24시간 신속 출동.',
+    priceRange: '$$',
+    openingHours: 'Mo-Su 00:00-24:00',
+    description: '서울·경기 배관막힘, 싱크대막힘 전문 업체. 24시간 신속 출동.',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '신수로 3길 23',
+      addressLocality: '마포구',
+      addressRegion: '서울특별시',
+      addressCountry: 'KR',
+    },
+    areaServed: ['서울특별시', '경기도', '인천광역시'],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: '배관 서비스',
+      itemListElement: ['배관막힘', '하수구막힘', '싱크대막힘', '변기막힘', '우수관막힘', '고압세척'].map(s => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: s },
+      })),
+    },
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '1866-2449',

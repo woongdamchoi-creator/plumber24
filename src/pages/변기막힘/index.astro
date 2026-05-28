@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import { getAllRegions, regionUrl } from '../../lib/regions';
+
+const cat = { name: '변기막힘', icon: '🚽', desc: '이물질·종이로 막힌 변기를 전문 장비로 완벽 해결합니다' };
+const categories = [
+  { name: '배관막힘', href: '/배관막힘/', icon: '🔧' },
+  { name: '하수구막힘', href: '/하수구막힘/', icon: '🚰' },
+  { name: '싱크대막힘', href: '/싱크대막힘/', icon: '🚿' },
+  { name: '변기막힘', href: '/변기막힘/', icon: '🚽' },
+  { name: '우수관막힘', href: '/우수관막힘/', icon: '🌧️' },
+  { name: '고압세척', href: '/고압세척/', icon: '💧' },
+];
+const regions = getAllRegions().filter(r => r.dong).slice(60, 80);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['LocalBusiness', 'Plumber'],
+  name: '배관매니저',
+  telephone: '18662449',
+  openingHours: 'Mo-Su 00:00-24:00',
+  description: '서울·경기 변기막힘 전문 업체. 24시간 신속 출동.',
+};
+---
+<BaseLayout title="변기막힘 전문 업체 | 배관매니저 1866-2449" description="서울·경기 변기막힘 전문 업체 배관매니저. 24시간 신속 출동. 이물질·종이 막힘 즉시 해결." jsonLd={jsonLd}>
+  <Header />
+  <main>
+    <section class="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-12 px-4 text-center">
+      <p class="text-blue-200 text-sm mb-2">24시간 신속출동 · 서울/경기 전지역</p>
+      <h1 class="text-3xl md:text-4xl font-black mb-3">{cat.icon} 변기막힘 전문 업체</h1>
+      <p class="text-blue-100 mb-6 max-w-lg mx-auto">{cat.desc}</p>
+      <a href="tel:18662449" class="inline-flex items-center gap-2 bg-yellow-400 text-blue-900 font-black text-2xl px-8 py-4 rounded-full shadow-xl hover:bg-yellow-300 transition-all">📞 1866-2449</a>
+    </section>
+    <section class="max-w-4xl mx-auto px-4 py-10">
+      <h2 class="text-xl font-bold text-gray-800 mb-5">변기막힘 서비스 지역</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {regions.map(r => (
+          <a href={regionUrl(r.sidoname, r.sigungu, r.dong)} class="bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-700 rounded-xl p-3 text-sm text-center font-medium transition-colors">{r.sigungu} {r.dong}</a>
+        ))}
+      </div>
+    </section>
+    <section class="max-w-4xl mx-auto px-4 py-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">다른 서비스 보기</h2>
+      <div class="flex flex-wrap gap-2">
+        {categories.filter(c => c.name !== cat.name).map(c => (
+          <a href={c.href} class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">{c.icon} {c.name}</a>
+        ))}
+      </div>
+    </section>
+    <section class="max-w-2xl mx-auto px-4 pb-12">
+      <ContactForm region="서울·경기" keyword="변기막힘" />
+    </section>
+  </main>
+</BaseLayout>
