@@ -1,9 +1,7 @@
 /**
  * 배관막힘 통합 Google Apps Script
  * ─────────────────────────────────────────────
- * 여러 홈페이지에서 한 스프레드시트로 수집
- *
- * 시트 1: 배관막힘(상담접수) → 접수일시 / 사이트주소 / 이름 / 연락처 / 내용 / 비고
+ * 시트 1: 배관막힘(상담접수) → 접수일시 / 사이트주소 / 이름 / 연락처 / 내용 / 주소 / 비고
  * 시트 2: 배관막힘(방문자)   → 일시 / 사이트주소 / 방문자수(누적)
  *
  * 배포: 확장 프로그램 → Apps Script → 새 배포 → 웹 앱
@@ -16,9 +14,17 @@ const VISIT_SHEET   = '배관막힘(방문자)';
 
 function doPost(e) {
   try {
-    const ss   = SpreadsheetApp.getActiveSpreadsheet();
-    const raw  = (e && e.postData) ? e.postData.contents : '{}';
-    const data = JSON.parse(raw);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // 1순위: URL 쿼리 파라미터 (no-cors fetch 시 body 유실 방지용)
+    // 2순위: JSON body (기존 방식 fallback)
+    let data = {};
+    if (e && e.parameter && e.parameter.name) {
+      data = e.parameter;
+    } else {
+      const raw = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';
+      try { data = JSON.parse(raw); } catch (_) { data = {}; }
+    }
 
     if (data.type === 'pageview') {
       recordVisit(ss, data);
@@ -42,8 +48,9 @@ function recordInquiry(ss, data) {
   let sheet = ss.getSheetByName(INQUIRY_SHEET);
 
   if (!sheet) {
+    // 새 시트 생성
     sheet = ss.insertSheet(INQUIRY_SHEET);
-    const header = ['접수일시', '사이트주소', '이름', '연락처', '내용', '비고'];
+    const header = ['접수일시', '사이트주소', '이름', '연락처', '내용', '주소', '비고'];
     sheet.appendRow(header);
     sheet.getRange(1, 1, 1, header.length)
       .setFontWeight('bold')
@@ -55,7 +62,24 @@ function recordInquiry(ss, data) {
     sheet.setColumnWidth(3, 100);
     sheet.setColumnWidth(4, 130);
     sheet.setColumnWidth(5, 280);
-    sheet.setColumnWidth(6, 150);
+    sheet.setColumnWidth(6, 160);
+    sheet.setColumnWidth(7, 150);
+  } else {
+    // 기존 시트에 '주소' 컬럼이 없으면 5번째 열(내용) 다음에 자동 삽입
+    const lastCol = sheet.getLastColumn();
+    const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    if (!headers.includes('주소')) {
+      // 내용(5번 열) 다음에 삽입
+      const insertAfter = headers.indexOf('내용') + 1; // 1-based 이미 반영됨
+      const colPos = insertAfter > 0 ? insertAfter + 1 : 6;
+      sheet.insertColumnAfter(colPos - 1);
+      sheet.getRange(1, colPos).setValue('주소');
+      sheet.getRange(1, colPos)
+        .setFontWeight('bold')
+        .setBackground('#1565C0')
+        .setFontColor('#ffffff');
+      sheet.setColumnWidth(colPos, 160);
+    }
   }
 
   // KST 기준 접수일시 (UTC+9)
@@ -64,12 +88,13 @@ function recordInquiry(ss, data) {
   const datetime = kst.toISOString().replace('T', ' ').slice(0, 19);
 
   const siteUrl = data.site_url || data.page_url || '';
-  const name    = data.name    || '';
-  const phone   = data.phone   || '';
-  const inquiry = data.inquiry || data.category || data.service || data.content || '';
-  const note    = data.note    || '';
+  const name    = data.name     || '';
+  const phone   = data.phone    || '';
+  const inquiry = data.inquiry  || data.category || data.service || data.content || '';
+  const address = data.address  || [data.sido, data.sigungu].filter(Boolean).join(' ') || '';
+  const note    = data.note     || '';
 
-  sheet.appendRow([datetime, siteUrl, name, phone, inquiry, note]);
+  sheet.appendRow([datetime, siteUrl, name, phone, inquiry, address, note]);
 }
 
 // ── 방문자 카운트 기록 (날짜+사이트별 누적) ──────────────────────────────────
@@ -108,19 +133,14 @@ function recordVisit(ss, data) {
   sheet.appendRow([today, siteUrl, 1]);
 }
 
-// ── 불필요한 시트 삭제 (이번 한 번만 실행) ──────────────────────────────────
-// Apps Script 편집기에서 이 함수 선택 후 ▶ 실행
+// ── 불필요한 시트 삭제 (필요 시 수동 실행) ──────────────────────────────────
 function cleanupSheets() {
   const ss   = SpreadsheetApp.getActiveSpreadsheet();
   const keep = [INQUIRY_SHEET, VISIT_SHEET];
-
   keep.forEach(name => {
     if (!ss.getSheetByName(name)) ss.insertSheet(name);
   });
-
   ss.getSheets().forEach(sheet => {
-    if (!keep.includes(sheet.getName())) {
-      ss.deleteSheet(sheet);
-    }
+    if (!keep.includes(sheet.getName())) ss.deleteSheet(sheet);
   });
 }
