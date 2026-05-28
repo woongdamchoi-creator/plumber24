@@ -222,6 +222,21 @@ const allLd = [
 
   <slot />
 
+  <!-- 사업자 정보 바 — 검색엔진 신뢰도 핵심 요소 (Case 20) -->
+  <div class="bg-gray-950 text-gray-500 text-xs text-center py-3 px-4 leading-relaxed border-t border-gray-800">
+    <p class="mb-0.5">
+      상호: {siteConfig.siteName}
+      {siteConfig.businessInfo.ceo && ` · 대표: ${siteConfig.businessInfo.ceo}`}
+      {siteConfig.businessInfo.bizNumber && ` · 사업자등록번호: ${siteConfig.businessInfo.bizNumber}`}
+      {siteConfig.businessInfo.mailOrderNum && ` · 통신판매업신고번호: ${siteConfig.businessInfo.mailOrderNum}`}
+    </p>
+    <p>
+      {siteConfig.businessInfo.address && `${siteConfig.businessInfo.address} · `}
+      Tel: <a href="tel:18662449" class="hover:text-gray-300 transition-colors">1866-2449</a>
+      {siteConfig.businessInfo.email && ` · ${siteConfig.businessInfo.email}`}
+    </p>
+  </div>
+
   <script define:vars={{ APPS_SCRIPT_URL }}>
     const toggle  = document.getElementById('quick-form-toggle');
     const panel   = document.getElementById('quick-form-panel');

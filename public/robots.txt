@@ -1,3 +1,10 @@
 User-agent: *
 Allow: /
-Sitemap: https://plumbers24.netlify.app/sitemap.xml
+
+User-agent: Yeti
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://plumbers24.netlify.app/sitemap-index.xml

@@ -1,0 +1,3 @@
+# Netlify 리다이렉트 설정
+# sitemap.xml → sitemap-index.xml (Astro 빌드 출력 파일명)
+/sitemap.xml /sitemap-index.xml 301

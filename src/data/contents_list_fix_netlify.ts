@@ -38,4 +38,14 @@ export const siteConfig = {
     { label: '배관후기', href: '/reviews' },
     { label: '상담신청', href: '/contact' },
   ],
+
+  // ── 사업자 정보 (검색엔진 신뢰도 핵심 — 실제 정보로 업데이트하세요) ──────────
+  // ⚠️ 아래 값을 실제 사업자 정보로 반드시 변경하세요
+  businessInfo: {
+    ceo:          '대표자명',                       // ← 실제 대표자명으로 변경
+    bizNumber:    '000-00-00000',                 // ← 사업자등록번호로 변경
+    mailOrderNum: '제2025-서울-00000호',            // ← 통신판매업신고번호로 변경
+    address:      '서울특별시',                     // ← 실제 주소로 변경
+    email:        '',                              // ← 이메일 있으면 추가
+  },
 } as const;
