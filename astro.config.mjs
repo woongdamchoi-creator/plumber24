@@ -12,10 +12,6 @@ export default defineConfig({
         !page.includes('/test') &&
         !page.includes('/seo-check') &&
         !page.includes('/title-manager'),
-      changefreq: 'weekly',
-      priority: 0.7,
-      lastmod: new Date(),
-      customPages: [],
     }),
   ],
   output: 'static',
