@@ -23,7 +23,7 @@ const {
   breadcrumbs,
 } = Astro.props;
 
-const siteUrl  = 'https://plumbers24.netlify.app';
+const siteUrl  = siteConfig.siteUrl;   // contents_list_fix_netlify.ts 에서 중앙 관리
 const canonUrl = canonical ?? (siteUrl + Astro.url.pathname);
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK8bmvdHDyfPh6MXekJ82bunwQquxPjm2R32qJcEoFxbCykqLOL0TZ1nNRNC7hwHMa/exec';
@@ -43,10 +43,29 @@ const breadcrumbLd = breadcrumbs?.length
     }
   : null;
 
+// WebSite Schema — 사이트 전체를 하나의 출처로 명시 (스팸 방지 핵심)
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${siteUrl}/#website`,
+  name: '배관매니저',
+  url: siteUrl,
+  description: '서울·경기 배관막힘, 싱크대막힘 전문 업체. 24시간 신속 출동.',
+  inLanguage: 'ko-KR',
+  publisher: {
+    '@type': 'Organization',
+    name: '배관매니저',
+    url: siteUrl,
+    telephone: '1866-2449',
+  },
+};
+
 const allLd = [
+  websiteLd,
   {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'Plumber'],
+    '@id': `${siteUrl}/#localbusiness`,
     name: '배관매니저',
     url: siteUrl,
     telephone: '18662449',

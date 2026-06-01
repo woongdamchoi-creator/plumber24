@@ -207,6 +207,7 @@ const pageFaqs  = shuffled.slice(0, faqCount).map(f => ({
         const nbRoadAddr  = generateRoadAddr(sidoname, nb.sigungu, nb.dong, nbSeed);
         const nbJibunAddr = generateJibunAddr(sidoname, nb.sigungu, nb.dong, nbSeed);
         const nbSt        = getStation(nb.sigungu);
+        const nbPageUrl   = `/${sidoSlug}/${encodeURIComponent(nb.sigungu)}/${encodeURIComponent(nb.dong)}`;
         return (
           <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col gap-2 hover:border-blue-300 hover:shadow-md transition-all">
             <div class="flex items-center gap-2 mb-0.5">
@@ -242,6 +243,11 @@ const pageFaqs  = shuffled.slice(0, faqCount).map(f => ({
                 🗺 네이버지도
               </a>
             </div>
+            <!-- 내부 링크 (낙수효과): 해당 동 페이지로 직접 연결 -->
+            <a href={nbPageUrl}
+               class="block text-center text-xs font-bold py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors mt-0.5">
+              {nbRegion} 배관막힘 서비스 안내 →
+            </a>
           </div>
         );
       })}
@@ -331,6 +337,28 @@ const pageFaqs  = shuffled.slice(0, faqCount).map(f => ({
       </div>
     </div>
   )}
+
+  <!-- ⑦ 서비스 종류별 허브 링크 (낙수효과: 동 페이지 → 키워드 허브) -->
+  <div class="max-w-4xl mx-auto px-4 pb-10">
+    <h2 class="text-sm font-bold text-gray-600 mb-3 border-l-4 border-orange-400 pl-3">
+      다른 배관 서비스 보기
+    </h2>
+    <div class="flex flex-wrap gap-2">
+      {[
+        { name: '배관막힘',   href: '/배관막힘/',   icon: '🔧' },
+        { name: '하수구막힘', href: '/하수구막힘/', icon: '🚰' },
+        { name: '싱크대막힘', href: '/싱크대막힘/', icon: '🚿' },
+        { name: '변기막힘',   href: '/변기막힘/',   icon: '🚽' },
+        { name: '우수관막힘', href: '/우수관막힘/', icon: '🌧️' },
+        { name: '고압세척',   href: '/고압세척/',   icon: '💧' },
+      ].map(kw => (
+        <a href={kw.href}
+           class="bg-gray-100 hover:bg-blue-50 hover:text-blue-700 text-gray-600 text-xs font-medium px-3 py-1.5 rounded-full transition-colors">
+          {kw.icon} {kw.name}
+        </a>
+      ))}
+    </div>
+  </div>
 </main>
 
 <script>

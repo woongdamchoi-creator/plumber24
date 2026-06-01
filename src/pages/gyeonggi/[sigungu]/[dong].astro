@@ -6,6 +6,7 @@ import DongPage from '../../../components/DongPage.astro';
 import { getDongsBySigungu, getUniqueSigungu } from '../../../lib/regions';
 import { DONG_TITLES, DONG_DESCS, DONG_SUBS, strSeed, getTitleParts } from '../../../data/title_templates';
 import { getGlobalIndex, getPaginationWindow } from '../../../lib/pagination';
+import { siteConfig } from '../../../data/contents_list_fix_netlify';
 
 export async function getStaticPaths() {
   const sidoname = '경기도';
@@ -45,14 +46,18 @@ const breadcrumbs = [
   { name: dong, url: `/gyeonggi/${encodeURIComponent(sigungu)}/${encodeURIComponent(dong)}` },
 ];
 
+const pageUrl = `${siteConfig.siteUrl}/gyeonggi/${encodeURIComponent(sigungu)}/${encodeURIComponent(dong)}`;
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': ['LocalBusiness', 'Plumber'],
+  '@id': pageUrl,
   name: `배관매니저 ${region} ${keyword}`,
+  url: pageUrl,
   description: `${region} ${keyword} 전문 업체. 24시간 신속 출동.`,
   telephone: '18662449',
   priceRange: '$$',
   openingHours: 'Mo-Su 00:00-24:00',
+  isPartOf: { '@type': 'WebSite', '@id': `${siteConfig.siteUrl}/#website` },
   areaServed: { '@type': 'AdministrativeArea', name: `${sidoname} ${sigungu} ${dong}` },
   geo: { '@type': 'GeoCoordinates', latitude: row.lat, longitude: row.lon },
   hasOfferCatalog: {
@@ -69,7 +74,7 @@ const jsonLd = {
 <BaseLayout
   title={pageTitle}
   description={pageDesc}
-  canonical={`https://plumbers24.netlify.app/gyeonggi/${encodeURIComponent(sigungu)}/${encodeURIComponent(dong)}`}
+  canonical={pageUrl}
   breadcrumbs={breadcrumbs}
   jsonLd={jsonLd}
   region={region}

@@ -71,6 +71,26 @@ const kwPool = ['하수구막힘', '싱크대막힘', '배관막힘', '변기막
     </p>
   </section>
 
+  <!-- 서비스 종류별 허브 링크 (낙수효과: 시군구 → 키워드 허브) -->
+  <section class="mb-8">
+    <h2 class="text-lg font-bold text-gray-800 mb-3">다른 배관 서비스 보기</h2>
+    <div class="flex flex-wrap gap-2">
+      {[
+        { name: '배관막힘',   href: '/배관막힘/',   icon: '🔧' },
+        { name: '하수구막힘', href: '/하수구막힘/', icon: '🚰' },
+        { name: '싱크대막힘', href: '/싱크대막힘/', icon: '🚿' },
+        { name: '변기막힘',   href: '/변기막힘/',   icon: '🚽' },
+        { name: '우수관막힘', href: '/우수관막힘/', icon: '🌧️' },
+        { name: '고압세척',   href: '/고압세척/',   icon: '💧' },
+      ].map(kw => (
+        <a href={kw.href}
+           class={`bg-${accentColor}-50 hover:bg-${accentColor}-100 text-${accentColor}-700 px-4 py-2 rounded-full text-sm font-medium transition-colors`}>
+          {kw.icon} {kw.name}
+        </a>
+      ))}
+    </div>
+  </section>
+
   <!-- 상담 폼 -->
   <ContactForm region={sigungu} keyword="배관막힘" />
 </main>

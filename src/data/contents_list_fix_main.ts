@@ -48,19 +48,19 @@ export const mainContent = {
       icon:  '🔧',
       title: '배관막힘',
       desc:  '노후 배관·이물질·기름때 고압세척 및 전문 장비로 완벽 해결',
-      href:  '/seoul',
+      href:  '/배관막힘/',
     },
     {
       icon:  '🚿',
       title: '싱크대막힘',
       desc:  '주방·욕실 배관막힘 신속 해결. 음식물·헤어 제거',
-      href:  '/gyeonggi',
+      href:  '/싱크대막힘/',
     },
     {
       icon:  '🌧️',
       title: '우수관막힘',
       desc:  '건물 외벽·지하 우수관 전문 장비 해결. 역류·누수 예방',
-      href:  '/contact',
+      href:  '/우수관막힘/',
     },
   ],
 

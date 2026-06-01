@@ -1,8 +1,9 @@
 // src/pages/sitemap.xml.ts — 자동 sitemap.xml 생성
 import type { APIRoute } from 'astro';
 import { getAllRegions, SIDO_SLUG } from '../lib/regions';
+import { siteConfig } from '../data/contents_list_fix_netlify';
 
-const SITE = 'https://plumbers24.netlify.app';
+const SITE = siteConfig.siteUrl;
 
 export const GET: APIRoute = async () => {
   const allRegions = getAllRegions();
@@ -10,6 +11,9 @@ export const GET: APIRoute = async () => {
 
   // 정적 페이지
   const staticPages = ['/', '/about', '/contact', '/seoul', '/gyeonggi', '/reviews', '/sitemap-page'];
+
+  // 키워드 허브 페이지 (낙수효과 핵심 노드)
+  const keywordHubs = ['/배관막힘/', '/하수구막힘/', '/싱크대막힘/', '/변기막힘/', '/우수관막힘/', '/고압세척/'];
 
   // 시군구 페이지
   const sigungus = new Set<string>();
@@ -35,6 +39,7 @@ export const GET: APIRoute = async () => {
   const allUrls = [
     ...otherStatics.map(p => ({ url: p, priority: '1.0', changefreq: 'weekly' })),
     ...sidoUrls.map(p => ({ url: p, priority: '0.9', changefreq: 'weekly' })),
+    ...keywordHubs.map(p => ({ url: p, priority: '0.9', changefreq: 'weekly' })),
     ...[...sigungus].map(u => ({ url: u, priority: '0.8', changefreq: 'weekly' })),
     ...dongs.map(u => ({ url: u, priority: '0.7', changefreq: 'monthly' })),
   ];
