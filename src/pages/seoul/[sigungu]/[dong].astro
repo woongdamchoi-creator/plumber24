@@ -5,40 +5,29 @@ import Header from '../../../components/Header.astro';
 import DongPage from '../../../components/DongPage.astro';
 import { getDongsBySigungu, getUniqueSigungu } from '../../../lib/regions';
 import { DONG_TITLES, DONG_DESCS, DONG_SUBS, strSeed, getTitleParts } from '../../../data/title_templates';
+import { getGlobalIndex, getPaginationWindow } from '../../../lib/pagination';
 
 export async function getStaticPaths() {
   const sidoname = '서울특별시';
-  const sidoSlug = 'seoul';
   const sigungus = getUniqueSigungu(sidoname);
 
-  const allItems: { sigungu: string; dong: string; row: any }[] = [];
+  const paths = [];
   for (const sg of sigungus) {
     for (const row of getDongsBySigungu(sidoname, sg)) {
-      allItems.push({ sigungu: sg, dong: row.dong, row });
-    }
-  }
-
-  return allItems.map((item, idx) => {
-    const start = Math.max(0, idx - 2);
-    const end   = Math.min(allItems.length - 1, idx + 2);
-    const neighbors = [];
-    for (let i = start; i <= end; i++) {
-      neighbors.push({
-        num: i + 1,
-        href: `/${sidoSlug}/${encodeURIComponent(allItems[i].sigungu)}/${encodeURIComponent(allItems[i].dong)}`,
-        label: `${allItems[i].sigungu} ${allItems[i].dong}`,
-        isCurrent: i === idx,
+      const href      = `/seoul/${encodeURIComponent(sg)}/${encodeURIComponent(row.dong)}`;
+      const globalIdx = getGlobalIndex(href);
+      const pagination = getPaginationWindow(globalIdx, 10);
+      paths.push({
+        params: { sigungu: sg, dong: row.dong },
+        props:  { row, pagination },
       });
     }
-    return {
-      params: { sigungu: item.sigungu, dong: item.dong },
-      props: { row: item.row, neighbors },
-    };
-  });
+  }
+  return paths;
 }
 
 const { sigungu, dong } = Astro.params;
-const { row, neighbors } = Astro.props;
+const { row, pagination } = Astro.props;
 const sidoname = '서울특별시';
 const region   = `${sigungu} ${dong}`;
 const keyword  = '배관막힘';
@@ -123,15 +112,15 @@ const jsonLd = {
     accentColor="blue"
   />
 
-  <!-- 페이지네이션 -->
-  <nav class="flex justify-center gap-2 py-6 px-4 bg-gray-50 border-t border-gray-200" aria-label="페이지 이동">
-    {neighbors.map((n: any) => (
+  <!-- 전역 페이지네이션 (10개, 현재 페이지 가운데) -->
+  <nav class="flex justify-center flex-wrap gap-2 py-5 px-4 bg-gray-50 border-t border-gray-200" aria-label="페이지 이동">
+    {pagination.map((n: any) => (
       <a
         href={n.href}
         title={n.label}
         class={`min-w-[44px] px-3 py-2 rounded-lg text-sm font-bold text-center transition-colors ${
           n.isCurrent
-            ? 'bg-blue-700 text-white shadow-md'
+            ? 'bg-blue-700 text-white shadow-md pointer-events-none'
             : 'bg-white border border-gray-300 text-gray-600 hover:bg-blue-50 hover:border-blue-400'
         }`}
       >
