@@ -1,0 +1,183 @@
+---
+// src/pages/review-preview.astro
+// 각 동 페이지에 어떤 후기가 배정됐는지 미리 확인하는 관리 페이지
+// 주소: /review-preview
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { getAllRegions, SIDO_SLUG } from '../lib/regions';
+import { getGlobalIndex } from '../lib/pagination';
+
+// 후기성.txt 로드
+let reviews: string[] = [];
+try {
+  const raw = readFileSync(resolve(process.cwd(), '후기성.txt'), 'utf-8');
+  reviews = raw.split(/\n===\n/).map(t => t.trim()).filter(Boolean);
+} catch {
+  reviews = ['(후기성.txt 파일을 찾을 수 없습니다)'];
+}
+
+// 전체 동 페이지 목록
+const allRegions = getAllRegions().filter(r => r.dong);
+const rows = allRegions.map(r => {
+  const slug = SIDO_SLUG[r.sidoname];
+  if (!slug) return null;
+  const href       = `/${slug}/${encodeURIComponent(r.sigungu)}/${encodeURIComponent(r.dong)}`;
+  const globalIdx  = getGlobalIndex(href);
+  const reviewIdx  = globalIdx % reviews.length;
+  const reviewText = reviews[reviewIdx] || '';
+  const firstLine  = reviewText.split('\n')[0].replace('{region}', `${r.sigungu} ${r.dong}`);
+  const excerpt    = reviewText.replace(/\{region\}/g, `${r.sigungu} ${r.dong}`).slice(0, 120) + '…';
+  return { globalIdx, sido: r.sidoname, sigungu: r.sigungu, dong: r.dong, href, reviewIdx, firstLine, excerpt };
+}).filter(Boolean) as any[];
+
+const total        = rows.length;
+const reviewCount  = reviews.length;
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>후기 배정 미리보기 | 관리</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #1e293b; font-size: 14px; }
+    .header { background: #1e40af; color: white; padding: 20px 24px; }
+    .header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .header p { font-size: 13px; opacity: 0.8; }
+    .stats { display: flex; gap: 16px; padding: 16px 24px; background: white; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+    .stat { background: #f1f5f9; border-radius: 8px; padding: 10px 16px; }
+    .stat .num { font-size: 22px; font-weight: 800; color: #1d4ed8; }
+    .stat .label { font-size: 12px; color: #64748b; margin-top: 2px; }
+    .controls { padding: 12px 24px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .controls input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 13px; width: 220px; }
+    .controls select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+    .controls label { font-size: 13px; color: #475569; }
+    table { width: 100%; border-collapse: collapse; }
+    .table-wrap { padding: 16px 24px; overflow-x: auto; }
+    thead th { background: #1e3a8a; color: white; padding: 10px 12px; text-align: left; font-size: 12px; white-space: nowrap; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr:hover { background: #eff6ff; }
+    td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .b-seoul { background: #dbeafe; color: #1d4ed8; }
+    .b-gyeonggi { background: #dcfce7; color: #166534; }
+    .review-num { display: inline-block; width: 26px; height: 26px; border-radius: 50%; background: #fef3c7; color: #92400e; font-weight: 800; font-size: 12px; text-align: center; line-height: 26px; }
+    .first-line { font-weight: 600; color: #1e293b; margin-bottom: 3px; }
+    .excerpt { color: #64748b; font-size: 12px; line-height: 1.5; }
+    a.page-link { color: #2563eb; text-decoration: none; }
+    a.page-link:hover { text-decoration: underline; }
+    .review-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin: 8px 0; font-size: 13px; line-height: 1.7; white-space: pre-wrap; }
+    .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    details summary { cursor: pointer; color: #2563eb; font-size: 12px; margin-top: 4px; }
+    .section { padding: 16px 24px 8px; }
+    .section h2 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #1e293b; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📋 후기 배정 미리보기</h1>
+  <p>후기성.txt에서 {reviewCount}개 후기가 {total}개 페이지에 순환 배정됩니다 (페이지번호 % 후기수)</p>
+</div>
+
+<!-- 통계 -->
+<div class="stats">
+  <div class="stat"><div class="num">{total}</div><div class="label">전체 동 페이지</div></div>
+  <div class="stat"><div class="num">{reviewCount}</div><div class="label">후기 텍스트 수</div></div>
+  <div class="stat"><div class="num">{Math.ceil(total / reviewCount)}</div><div class="label">후기당 평균 배정 페이지</div></div>
+</div>
+
+<!-- 후기 목록 -->
+<div class="section">
+  <h2>📝 후기성.txt 등록된 후기 ({reviewCount}개)</h2>
+  {reviews.map((r, i) => (
+    <div class="review-box">
+      <div class="review-header">
+        <span class="review-num">{i + 1}</span>
+        <strong>{r.split('\n')[0].replace('{region}', '○○동')}</strong>
+      </div>
+      <div style="color:#475569; font-size:12px;">{r.replace(/\{region\}/g, '○○동').slice(0, 200)}…</div>
+    </div>
+  ))}
+</div>
+
+<!-- 검색 + 필터 -->
+<div class="controls">
+  <input type="text" id="search" placeholder="지역명 검색 (예: 강남, 역삼)" oninput="filterTable()" />
+  <select id="sidoFilter" onchange="filterTable()">
+    <option value="">전체 시도</option>
+    <option value="서울특별시">서울특별시</option>
+    <option value="경기도">경기도</option>
+  </select>
+  <select id="reviewFilter" onchange="filterTable()">
+    <option value="">전체 후기</option>
+    {reviews.map((_, i) => <option value={String(i + 1)}>후기 {i + 1}번</option>)}
+  </select>
+  <label id="countLabel" style="margin-left:auto; color:#64748b;"></label>
+</div>
+
+<!-- 페이지-후기 배정 테이블 -->
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>페이지#</th>
+        <th>시도</th>
+        <th>지역</th>
+        <th>후기#</th>
+        <th>후기 제목 / 미리보기</th>
+        <th>링크</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      {rows.map(r => (
+        <tr data-sido={r.sido} data-region={`${r.sigungu} ${r.dong}`} data-review={r.reviewIdx + 1}>
+          <td style="font-weight:700; color:#64748b;">{r.globalIdx + 1}</td>
+          <td>
+            <span class={`badge ${r.sido === '서울특별시' ? 'b-seoul' : 'b-gyeonggi'}`}>
+              {r.sido === '서울특별시' ? '서울' : '경기'}
+            </span>
+          </td>
+          <td style="font-weight:600;">{r.sigungu} {r.dong}</td>
+          <td><span class="review-num">{r.reviewIdx + 1}</span></td>
+          <td>
+            <div class="first-line">{r.firstLine}</div>
+            <details>
+              <summary>미리보기 ▸</summary>
+              <div class="excerpt" style="margin-top:4px;">{r.excerpt}</div>
+            </details>
+          </td>
+          <td><a class="page-link" href={r.href} target="_blank">열기 ↗</a></td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function filterTable() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const sido   = document.getElementById('sidoFilter').value;
+    const rev    = document.getElementById('reviewFilter').value;
+    const rows   = document.querySelectorAll('#tableBody tr');
+    let count    = 0;
+    rows.forEach(row => {
+      const region  = row.dataset.region.toLowerCase();
+      const rowSido = row.dataset.sido;
+      const rowRev  = row.dataset.review;
+      const show    = (!search || region.includes(search))
+                   && (!sido   || rowSido === sido)
+                   && (!rev    || rowRev  === rev);
+      row.style.display = show ? '' : 'none';
+      if (show) count++;
+    });
+    document.getElementById('countLabel').textContent = count + '개 표시 중';
+  }
+  filterTable();
+</script>
+</body>
+</html>

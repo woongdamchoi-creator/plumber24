@@ -25,8 +25,9 @@ interface Props {
   sidoSlug: string;
   sidoLabel: string;
   accentColor: string;
+  reviewIdx?: number;
 }
-const { sidoname, sigungu, dong, lat, lon, sidoSlug, sidoLabel, accentColor } = Astro.props;
+const { sidoname, sigungu, dong, lat, lon, sidoSlug, sidoLabel, accentColor, reviewIdx } = Astro.props;
 
 const region  = dong ? `${sigungu} ${dong}` : sigungu;
 const keyword = '배관막힘';
@@ -74,7 +75,15 @@ const listTitle    = seededPick(seed,       REGION_LIST_TITLES).replace('{region
 const listSummary  = seededPick(seed + 1,   SERVICE_SUMMARIES).replace('{count}', String(nearbyCards.length + 1));
 const faqTitle     = seededPick(seed + 2,   FAQ_TITLES).replace('{region}', region);
 const galleryTitle = seededPick(seed + 3,   GALLERY_TITLES);
-const reviewText   = seededPick(seed + 4,   REVIEW_TEXTS).replace(/\{region\}/g, region);
+// 후기성.txt에서 로드 (전역 인덱스 기반 순환 선택)
+let _reviewPool: string[] = REVIEW_TEXTS;
+try {
+  const _raw = readFileSync(resolve(process.cwd(), '후기성.txt'), 'utf-8');
+  const _parsed = _raw.split(/\n===\n/).map((t: string) => t.trim()).filter(Boolean);
+  if (_parsed.length > 0) _reviewPool = _parsed;
+} catch { /* fallback */ }
+const _rIdx    = reviewIdx !== undefined ? reviewIdx : (seed + 4);
+const reviewText = _reviewPool[_rIdx % _reviewPool.length].replace(/\{region\}/g, region);
 
 // 갤러리 이미지 — 워싱된 이미지 목록 (public/images/gallery/washed/)
 const galleryDir = resolve(process.cwd(), 'public', 'images', 'gallery', 'washed');

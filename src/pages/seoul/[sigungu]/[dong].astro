@@ -20,7 +20,7 @@ export async function getStaticPaths() {
       const pagination = getPaginationWindow(globalIdx, 10);
       paths.push({
         params: { sigungu: sg, dong: row.dong },
-        props:  { row, pagination },
+        props:  { row, pagination, globalIdx },
       });
     }
   }
@@ -28,7 +28,7 @@ export async function getStaticPaths() {
 }
 
 const { sigungu, dong } = Astro.params;
-const { row, pagination } = Astro.props;
+const { row, pagination, globalIdx } = Astro.props;
 const sidoname = '서울특별시';
 const region   = `${sigungu} ${dong}`;
 const keyword  = '배관막힘';
@@ -115,6 +115,7 @@ const jsonLd = {
     sidoSlug="seoul"
     sidoLabel="서울특별시"
     accentColor="blue"
+    reviewIdx={globalIdx}
   />
 
   <!-- 전역 페이지네이션 (10개, 현재 페이지 가운데) -->
