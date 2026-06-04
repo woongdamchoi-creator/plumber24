@@ -5,3 +5,4 @@ output/
 *.zip
 백업/
 홈페이지제작.zip
+node_modules

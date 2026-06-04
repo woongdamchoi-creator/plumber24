@@ -342,25 +342,39 @@ const allLd = [
       }
     });
 
-    // ── 일 방문자 카운터 (하루 1회, localStorage 기반) ──────────────
+    // ── 일 방문자 카운터 (하루 1회) — 봇/크롤러 제외, 공란 방지 ──────────────
     (function trackVisit() {
       try {
+        // 봇 감지: webdriver(자동화툴), headless 브라우저 제외
+        if (navigator.webdriver) return;
+        if (!window.localStorage) return;
+
         const APPS_URL = 'https://script.google.com/macros/s/AKfycbxPiUmBKUWRPdxvht5K9cLHFMJ83ML_S8qY0PzgeqnL9TfZs_IZJB4alpz0NUcRzv0/exec';
         const today = new Date().toISOString().slice(0, 10);
-        const key   = 'pv_counted_' + today;
-        if (localStorage.getItem(key)) return; // 오늘 이미 카운트됨
-        localStorage.setItem(key, '1');
-        const pvParams = new URLSearchParams({
-          type:     'pageview',
-          date:     today,
-          site_url: window.location.hostname,
-          page_url: window.location.href,
-          timestamp: new Date().toISOString(),
-        });
-        fetch(APPS_URL + '?' + pvParams.toString(), {
-          method: 'POST',
-          mode: 'no-cors',
-        }).catch(() => {});
+        const key   = 'pv_' + today + '_' + location.hostname;
+        if (localStorage.getItem(key)) return; // 오늘 이 사이트에서 이미 카운트됨
+
+        // 3초 후 전송 (즉시 이탈 봇 추가 필터링)
+        setTimeout(() => {
+          try {
+            localStorage.setItem(key, '1');
+            // 폼과 동일한 필드 구조로 전송 → 시트 공란 방지
+            const pvParams = new URLSearchParams({
+              date:      today,
+              name:      '[방문자]',
+              phone:     '-',
+              inquiry:   '페이지뷰(자동)',
+              address:   location.hostname,
+              source:    location.hostname,
+              page_url:  location.href,
+              timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+            });
+            fetch(APPS_URL + '?' + pvParams.toString(), {
+              method: 'POST',
+              mode: 'no-cors',
+            }).catch(() => {});
+          } catch (_) {}
+        }, 3000);
       } catch (_) {}
     })();
 
