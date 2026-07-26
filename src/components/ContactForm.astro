@@ -163,6 +163,17 @@ document.addEventListener('DOMContentLoaded', function () {
   var pageUrlEl = document.getElementById('cf-page-url');
   if (pageUrlEl) pageUrlEl.value = window.location.href;
 
+  // 유입경로: 최초 진입 시점의 referrer를 세션에 저장해두고, 폼 제출 시 그 값을 사용
+  function getEntryReferrer() {
+    var KEY = '_entry_referrer';
+    var stored = sessionStorage.getItem(KEY);
+    if (stored === null) {
+      stored = document.referrer || '직접 접속';
+      sessionStorage.setItem(KEY, stored);
+    }
+    return stored;
+  }
+
   var sidoEl    = document.getElementById('cf-sido');
   var sigunguEl = document.getElementById('cf-sigungu');
 
@@ -246,6 +257,8 @@ document.addEventListener('DOMContentLoaded', function () {
         address:   [sido, sigungu].filter(Boolean).join(' '),
         inquiry:   inquiryParts.join(', '),
         source:    location.hostname,
+        referrer:  getEntryReferrer(),
+        agree:     agree,
         page_url:  window.location.href,
         timestamp: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
       };
